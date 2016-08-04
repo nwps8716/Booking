@@ -82,7 +82,7 @@ $enddate = $enddate +1; //為截止日的隔天凌晨00:00
                             $("#count").html(data);
                             // alert(data);
                             }});
-                        },100)
+                        },10)
                     </script>
                     
                 </div>

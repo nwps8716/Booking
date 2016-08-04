@@ -91,6 +91,8 @@ class CRUD {
         $db = new myPDO();
         $pdo = $db->getConnection();
         
+        $sql = "SELECT `count` FROM `active` WHERE `avtiveID`=:activeID FOR UPDATE ";
+        //sleep(5);
         $sql = "UPDATE `active` SET `count`=:count WHERE `activeID`=:activeID ";
         $stmt = $pdo->prepare($sql);
         

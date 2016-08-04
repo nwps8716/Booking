@@ -1,10 +1,10 @@
 <?php
 class CRUD {
     
-    public function creatactive($name,$limit,$startdate,$enddate,$bringwith) {
+    public function creatactive($name,$limit,$startdate,$enddate,$bringwith,$limit) {
         $db = new myPDO();
         $pdo = $db->getConnection();
-        $sql = "INSERT INTO `active`(`name`, `limit`, `startdate`, `enddate`, `bringwith`) VALUES (:name, :limit, :startdate, :enddate, :bringwith)";
+        $sql = "INSERT INTO `active`(`name`, `limit`, `startdate`, `enddate`, `bringwith`,`count`) VALUES (:name, :limit, :startdate, :enddate, :bringwith, :count)";
     	$stmt = $pdo->prepare($sql);
     	
     	$stmt->bindValue(':name',$name);
@@ -12,6 +12,7 @@ class CRUD {
     	$stmt->bindValue(':startdate',$startdate);
     	$stmt->bindValue(':enddate',$enddate);
     	$stmt->bindValue(':bringwith',$bringwith);
+    	$stmt->bindValue(':count',$limit);  //用來計算報名人數的欄位
     	
     	$result = $stmt->execute();
     	$result = $pdo->lastInsertId();  //抓到最後一個activeID，丟給addmember使用
@@ -84,6 +85,29 @@ class CRUD {
             $_SESSION['alert'] = "資格不符";
             return FALSE;
         }
+    }
+    
+    public function updatecount($newcount,$activeID){
+        $db = new myPDO();
+        $pdo = $db->getConnection();
+        
+        $sql = "UPDATE `active` SET `count`=:count WHERE `activeID`=:activeID ";
+        $stmt = $pdo->prepare($sql);
+        
+        $stmt->bindValue(':count', $newcount);
+        $stmt->bindValue(':activeID', $activeID);
+        
+        $result = $stmt->execute();
+	    $db->closeConnection();
+	    
+	    if($result) {
+	        $_SESSION['alert'] = "報名成功";
+	        return $result;
+	    }
+    }
+    
+    public function message(){
+        $_SESSION['alert'] = "此次報名人數超過報名餘額";
     }
     
 }

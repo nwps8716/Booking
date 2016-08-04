@@ -21,7 +21,7 @@ class HomeController extends Controller {
             
             $showArray = Array();
             
-         	$row = $crud->creatactive($name,$limit,$startdate,$enddate,$bringwith);
+         	$row = $crud->creatactive($name,$limit,$startdate,$enddate,$bringwith,$limit);
         	//$row = $pdo->lastInsertId(); 最後一個activeID
         	
         	$member = $crud->addmember($row,$userid,$username);
@@ -51,7 +51,7 @@ class HomeController extends Controller {
         }
     }
     
-    function check() {
+    function checksignup() {
         $this->model("CRUD");
         $crud = new CRUD();
         
@@ -59,13 +59,28 @@ class HomeController extends Controller {
             $activeID = $_POST["activeID"];
             $userid = $_POST["userid"];
             $username = $_POST["username"];
+            $bringwith = $_POST["bringwith"];
+            
+            $bringwith = $bringwith + 1; //報名人加上攜伴人數
             
             $checkArray = Array();
             
             $row = $crud->getmember($activeID,$userid,$username);
             
             if($row>0) {
-                $this->view("index");
+                $test = $crud->getactive($activeID);
+                // var_dump($test[0]["count"]); 取出count值
+                // exit;
+                $newcount = $test[0]["count"] - $bringwith;
+                if($newcount >= 0){
+                    $count = $crud->updatecount($newcount,$activeID);
+                    $this->view("index");
+                }else{
+                    $checkArray['active'] = $test;
+                    $message = $crud->message();
+                    $this->view("signup",$checkArray);
+                }
+                
             }
             else if($row == FALSE){
                 $test = $crud->getactive($activeID);
@@ -77,6 +92,13 @@ class HomeController extends Controller {
         }
     }
     
+    function ajaxgetconut($id){
+        $this->model("CRUD");
+        $crud = new CRUD();
+        
+        $row = $crud->getactive($id);
+        $this->view("showajaxcount",$row[0]['count']);
+    }
 }
 
 ?>

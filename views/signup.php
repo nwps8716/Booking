@@ -1,3 +1,18 @@
+<?php 
+$signupArray = $data;
+$startdate = $signupArray["active"][0]['startdate'];
+$enddate = $signupArray["active"][0]['enddate'];
+$enddate = $enddate +1; //為截止日的隔天凌晨00:00
+    if(strtotime("now") < strtotime($startdate)){
+        echo "開始報名日期為:".$startdate;
+        exit;
+    }
+    else if(strtotime("now") > strtotime($enddate)){
+        echo "已經超過報名時間囉";
+        exit;
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,11 +43,9 @@
         <div class="row">
             <div class="box">
                 <div class="test2 col-xs-12 col-sm-12 col-md-4 well well-sm">
-                    <?php 
-                    $signupArray = $data;
-                    ?>
+                    
                     <legend align="center">活動名稱:<?php echo $signupArray["active"][0]["name"]; ?></legend>
-                    <form action="check" method="post" class="form" role="form">
+                    <form action="checksignup" name="reg" method="post" class="form" role="form">
                     <div class="row">
                         <div class="col-xs-6 col-md-6">
                             <label>員工編號:</label>
@@ -43,17 +56,34 @@
                             <input class="form-control" name="username" type="text" required />
                         </div>
                     </div>
+                    
                     <?php if($signupArray["active"][0]["bringwith"]==1) { ?>
                     <label>攜伴人數:</label>
                     <input class="form-control" name="bringwith" type="number" min="0" max="10"/>
-                    <?php }
-                        else if($signupArray["active"][0]["bringwith"]==0) {
-                            echo "此活動無法攜伴參加";
-                        }
-                    ?>
+                    
+                    <?php }else if($signupArray["active"][0]["bringwith"]==0) { ?>
+                    <input type="hidden" name="bringwith" value="0"/>
+                    <?php echo "<h5>"."此活動無法攜伴參加"."</h5>"; }?>
+                    
                     <input type="hidden" name="activeID" value="<?php echo $signupArray["active"][0]["activeID"];?>">
                     <input class=" tn btn-lg btn-primary btn-block" type="submit" name="button" value="報名" />
                     </form>
+                    <h3>
+                        可報名餘額:
+                        <span value="<?php echo $signupArray["active"][0]["activeID"];?>" id="count"></span>
+                    </h3>
+                    <script type="text/javascript">
+                        setInterval(function()
+                        {
+                            activeID = $("#count").attr("value");
+                            // alert(activeID);
+                            $.ajax({url: "/Event_Register/Home/ajaxgetconut/" + activeID,
+                            success: function(data){
+                            $("#count").html(data);
+                            // alert(data);
+                            }});
+                        },100)
+                    </script>
                     
                 </div>
             </div>

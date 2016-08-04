@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -56,7 +57,7 @@
                     </tr>
                 </table>
                 <h4>報名網址:</h4></br>
-                <p><?php echo '<a href="signup?&id='.$activeID.'";>https://testweb-lid-chen.c9users.io/Event_Register/Home/signup?&id='.$activeID.'</a>'; ?> </p>
+                <p><?php echo '<a href="signup?id='.$activeID.'";>https://testweb-lid-chen.c9users.io/Event_Register/Home/signup?id='.$activeID.'</a>'; ?> </p>
             </div>
         </div>
     </div>

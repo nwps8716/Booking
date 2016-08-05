@@ -87,14 +87,14 @@ class HomeController extends Controller {
             $row = $crud->checkmember($activeID,$userid,$username);
             
             $url = $crud->geturl($activeID);
+            
             if($row>0) {
-                
                 $test = $crud->getactive($url);
                 $checkArray['active'] = $test;
                 
-                $newcount = $test[0]["count"] - $bringwith;  //確認報名餘額
+                $newcount = $test[0]["count"] - $bringwith;  
                 if($newcount >= 0 && $status['status'] == 0){
-                    $count = $crud->updatecount($newcount,$activeID);
+                    $count = $crud->updatecount($newcount,$activeID,$bringwith);
                     $status = $crud->updatestatus($activeID,$userid);
                     $this->view("index");
                 }else if($test[0]["count"] == 0){

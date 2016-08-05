@@ -105,22 +105,30 @@ class CRUD {
         }
     }
     
-    public function updatecount($newcount,$activeID){
+    public function updatecount($newcount,$activeID,$bringwith){
         $db = new myPDO();
         $pdo = $db->getConnection();
         
         try{
             $pdo->beginTransaction();
             
-            $sql = "SELECT `count` FROM `active` WHERE `avtiveID`=:activeID FOR UPDATE ";
-            //sleep(5); 用來測試是否有 row lock.
-            $sql = "UPDATE `active` SET `count`=:count WHERE `activeID`=:activeID ";
+            $sql = "SELECT `count` FROM `active` WHERE `activeID` = :activeID FOR UPDATE ";
             $stmt = $pdo->prepare($sql);
-            
-            $stmt->bindValue(':count', $newcount);
+            //$stmt->bindValue(':count', $newcount);
             $stmt->bindValue(':activeID', $activeID);
-            
-            $result = $stmt->execute();
+            $stmt->execute();
+        
+            $result = $stmt->fetch();
+            // sleep(5); 
+            if($result['count'] >= $bringwith ){
+                $sql = "UPDATE `active` SET `count`=:count WHERE `activeID`=:activeID ";
+                $stmt = $pdo->prepare($sql);
+                
+                $stmt->bindValue(':count', $newcount);
+                $stmt->bindValue(':activeID', $activeID);
+                
+                $result = $stmt->execute();
+            }
     	    $db->closeConnection();
     	    
     	    $pdo->commit();
@@ -134,6 +142,7 @@ class CRUD {
 	        
         }catch (Exception $error) {
             $pdo->rollBack();
+            echo $error->getMessage();
         }
     }
     

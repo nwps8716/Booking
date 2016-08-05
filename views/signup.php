@@ -1,18 +1,3 @@
-<?php 
-$signupArray = $data;
-$startdate = $signupArray["active"][0]['startdate'];
-$enddate = $signupArray["active"][0]['enddate'];
-$enddate = $enddate +1; //為截止日的隔天凌晨00:00
-    if(strtotime("now") < strtotime($startdate)){
-        echo "開始報名日期為:".$startdate;
-        exit;
-    }
-    else if(strtotime("now") > strtotime($enddate)){
-        echo "已經超過報名時間囉";
-        exit;
-    }
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -43,7 +28,7 @@ $enddate = $enddate +1; //為截止日的隔天凌晨00:00
         <div class="row">
             <div class="box">
                 <div class="test2 col-xs-12 col-sm-12 col-md-4 well well-sm">
-                    
+                    <?php $signupArray = $data; ?>
                     <legend align="center">活動名稱:<?php echo $signupArray["active"][0]["name"]; ?></legend>
                     <form action="checksignup" name="reg" method="post" class="form" role="form">
                     <div class="row">

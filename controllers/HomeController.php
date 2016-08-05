@@ -47,6 +47,22 @@ class HomeController extends Controller {
             
             $signupArray['active'] = $row;
             
+            $startdate = new DateTime($signupArray["active"][0]['startdate']);
+            $enddate = new DateTime($signupArray["active"][0]['enddate']);
+            $enddate->add(new DateInterval('P1D')); //為截止日的隔天凌晨00:00 +1天
+            
+            date_default_timezone_set('Asia/Taipei');
+            $nowdate = new DateTime("now");;
+            
+            if($nowdate < $startdate){
+                echo "報名時間為:".$signupArray["active"][0]['startdate'];
+                exit;
+            }
+            else if($nowdate > $enddate){
+                echo "已經超過報名時間囉";
+                exit;
+            }
+            
             $this->view("signup",$signupArray);
         }
     }

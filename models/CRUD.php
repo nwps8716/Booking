@@ -28,7 +28,7 @@ class CRUD {
         $sql = "INSERT INTO `member`(`activeID`,`userid`, `username`) VALUES (:activeID, :userid, :username)";
         $stmt = $pdo->prepare($sql);
     	
-    	for($i=0 ; $i<count($userid) ; $i++){
+    	for($i=0 ; $i<count($userid) ; $i++){  //可報名活動人員新增到資料庫
     	    $id = $userid[$i];
             $name = $username[$i];
     	    $stmt->bindParam(':activeID',$activeID);

@@ -23,12 +23,13 @@ class HomeController extends Controller {
             $showArray = Array();
             
          	$row = $crud->creatactive($name,$limit,$startdate,$enddate,$bringwith,$limit);
-        	//$row = $pdo->lastInsertId(); 最後一個activeID
-        	
+    
         	$member = $crud->addmember($row,$userid,$username,$status);
         	
-        	$active = $crud->getactive($row);
+        	$url = $crud->geturl($row);
         	
+        	$active = $crud->getactive($url);
+
         	$showArray['active'] = $active;
         	
         	$this->view('show',$showArray);
@@ -40,11 +41,11 @@ class HomeController extends Controller {
         $crud = new CRUD();
         
         if(isset($_GET['id'])){
-            $id = $_GET['id'];
+            $url = $_GET['id'];
             
             $signupArray = Array();
             
-            $row = $crud->getactive($id);
+            $row = $crud->getactive($url);
             
             $signupArray['active'] = $row;
             
@@ -63,7 +64,6 @@ class HomeController extends Controller {
                 echo "已經超過報名時間囉";
                 exit;
             }
-            
             $this->view("signup",$signupArray);
         }
     }
@@ -86,8 +86,10 @@ class HomeController extends Controller {
             
             $row = $crud->checkmember($activeID,$userid,$username);
             
+            $url = $crud->geturl($activeID);
             if($row>0) {
-                $test = $crud->getactive($activeID);
+                
+                $test = $crud->getactive($url);
                 $checkArray['active'] = $test;
                 
                 $newcount = $test[0]["count"] - $bringwith;  //確認報名餘額
@@ -108,7 +110,8 @@ class HomeController extends Controller {
                 
             }
             else if($row == FALSE){
-                $test = $crud->getactive($activeID);
+                
+                $test = $crud->getactive($url);
                 
                 $checkArray['active'] = $test; 
                 
@@ -117,11 +120,11 @@ class HomeController extends Controller {
         }
     }
     
-    function ajaxgetconut($id){
+    function ajaxgetconut($url){
         $this->model("CRUD");
         $crud = new CRUD();
         
-        $row = $crud->getactive($id);
+        $row = $crud->getactive($url);
         $this->view("showajaxcount",$row[0]['count']);
     }
 }

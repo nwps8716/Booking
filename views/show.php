@@ -29,8 +29,9 @@
             <div class="box">
                 <?php 
                 $showArray = $data;
-                $activeID = $showArray["active"][0]["activeID"]
-                    // var_dump($showArray['active'][0]['name']);
+                $url = $showArray["active"][0]["url"];
+                // $activeID = $showArray["active"][0]["activeID"]
+                    // var_dump($showArray['active'][0]['url']);
                     // exit;
                 ?>
                 <table class="table table-bordered">
@@ -56,7 +57,11 @@
                     </tr>
                 </table>
                 <h4>報名網址:</h4></br>
-                <p><?php echo '<a href="signup?id='.$activeID.'";>https://testweb-lid-chen.c9users.io/Event_Register/Home/signup?id='.$activeID.'</a>'; ?> </p>
+                <p> <?php
+                        // $activeID = md5($activeID);
+                        echo '<a href="signup?id='.$url.'";>https://testweb-lid-chen.c9users.io/Event_Register/Home/signup?id='.$url.'</a>'; 
+                    ?> 
+                </p>
             </div>
         </div>
     </div>

@@ -55,7 +55,7 @@
                     </form>
                     <h3>
                         可報名餘額:
-                        <span value="<?php echo $signupArray["active"][0]["activeID"];?>" id="count"></span>
+                        <span value="<?php echo $signupArray["active"][0]["url"];?>" id="count"></span>
                     </h3>
                     <script type="text/javascript">
                         setInterval(function()

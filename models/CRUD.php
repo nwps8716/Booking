@@ -4,7 +4,7 @@ class CRUD {
     public function creatactive($name,$limit,$startdate,$enddate,$bringwith,$limit) {
         $db = new myPDO();
         $pdo = $db->getConnection();
-        $sql = "INSERT INTO `active`(`name`, `limit`, `startdate`, `enddate`, `bringwith`,`count`) VALUES (:name, :limit, :startdate, :enddate, :bringwith, :count)";
+        $sql = "INSERT INTO `active`(`name`, `limit`, `startdate`, `enddate`, `bringwith`,`count`, `url`) VALUES (:name, :limit, :startdate, :enddate, :bringwith, :count, SUBSTRING(MD5(RAND()) FROM 1 FOR 10) )";
     	$stmt = $pdo->prepare($sql);
     	
     	$stmt->bindValue(':name',$name);
@@ -21,6 +21,7 @@ class CRUD {
     	
     	return $result;
     }
+    
     
     public function addmember($activeID,$userid,$username,$status){
         $db = new myPDO();
@@ -48,20 +49,36 @@ class CRUD {
         }
     }
     
-    public function getactive($activeID){
+    public function getactive($url){
         $db = new myPDO();
         $pdo = $db->getConnection();
-        $sql = "SELECT * FROM `active` WHERE `activeID` = :activeID";
+        $sql = "SELECT * FROM `active` WHERE `url` = :url";
         $stmt= $pdo->prepare($sql);
         
-        $stmt->bindParam(':activeID',$activeID);
+        $stmt->bindValue(':url',$url);
         
         $stmt->execute();
         
         $result = $stmt->fetchAll();
         $db->closeConnection();
 	    
-	    return $result; 
+	    return $result;
+    }
+    
+    public function geturl($row){
+        $db = new myPDO();
+        $pdo = $db->getConnection();
+        $sql = "SELECT * FROM `active` WHERE `activeID` = :activeID";
+        $stmt= $pdo->prepare($sql);
+        
+        $stmt->bindParam(':activeID',$row);
+        
+        $stmt->execute();
+        
+        $result = $stmt->fetch();
+        $db->closeConnection();
+	    
+	    return $result['url'];
     }
     
     public function checkmember($activeID,$userid,$username){

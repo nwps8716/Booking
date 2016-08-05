@@ -22,10 +22,10 @@ class CRUD {
     	return $result;
     }
     
-    public function addmember($activeID,$userid,$username){
+    public function addmember($activeID,$userid,$username,$status){
         $db = new myPDO();
         $pdo = $db->getConnection();
-        $sql = "INSERT INTO `member`(`activeID`,`userid`, `username`) VALUES (:activeID, :userid, :username)";
+        $sql = "INSERT INTO `member`(`activeID`,`userid`, `username`, `status`) VALUES (:activeID, :userid, :username, :status)";
         $stmt = $pdo->prepare($sql);
     	
     	for($i=0 ; $i<count($userid) ; $i++){  //可報名活動人員新增到資料庫
@@ -34,6 +34,7 @@ class CRUD {
     	    $stmt->bindParam(':activeID',$activeID);
             $stmt->bindParam(':userid',$id);
     	    $stmt->bindParam(':username',$name);
+    	    $stmt->bindParam(':status',$status);
             $result = $stmt->execute();
     	}
     	
@@ -63,7 +64,7 @@ class CRUD {
 	    return $result; 
     }
     
-    public function getmember($activeID,$userid,$username){
+    public function checkmember($activeID,$userid,$username){
         $db = new myPDO();
         $pdo = $db->getConnection();
         $sql = "SELECT * FROM `member` WHERE `activeID`=:activeID AND `userid`=:userid AND `username`=:username ;";
@@ -91,26 +92,75 @@ class CRUD {
         $db = new myPDO();
         $pdo = $db->getConnection();
         
-        $sql = "SELECT `count` FROM `active` WHERE `avtiveID`=:activeID FOR UPDATE ";
-        //sleep(5);
-        $sql = "UPDATE `active` SET `count`=:count WHERE `activeID`=:activeID ";
-        $stmt = $pdo->prepare($sql);
+        try{
+            $pdo->beginTransaction();
+            
+            $sql = "SELECT `count` FROM `active` WHERE `avtiveID`=:activeID FOR UPDATE ";
+            //sleep(5); 用來測試是否有 row lock.
+            $sql = "UPDATE `active` SET `count`=:count WHERE `activeID`=:activeID ";
+            $stmt = $pdo->prepare($sql);
+            
+            $stmt->bindValue(':count', $newcount);
+            $stmt->bindValue(':activeID', $activeID);
+            
+            $result = $stmt->execute();
+    	    $db->closeConnection();
+    	    
+    	    $pdo->commit();
+    	    
+    	    if($result) {
+    	        $_SESSION['alert'] = "報名成功";
+    	        return $result;
+	        }else{
+	            throw new Exception("你出錯了!");
+	        }
+	        
+        }catch (Exception $error) {
+            $pdo->rollBack();
+        }
+    }
+    
+    public function updatestatus($activeID,$userid){
+        $db = new myPDO();
+        $pdo = $db->getConnection();
         
-        $stmt->bindValue(':count', $newcount);
-        $stmt->bindValue(':activeID', $activeID);
+        $sql = "UPDATE `member` SET `status`= 1 WHERE `activeID`=:activeID AND `userid`=:userid";
+        $stmt= $pdo->prepare($sql);
+        
+        $stmt->bindValue(':activeID',$activeID);
+        $stmt->bindValue(':userid',$userid);
         
         $result = $stmt->execute();
-	    $db->closeConnection();
+    	$db->closeConnection();
+    }
+    
+    public function getmemberstatus($activeID,$userid){
+        $db = new myPDO();
+        $pdo = $db->getConnection();
+        $sql = "SELECT `status` FROM `member` WHERE `activeID`=:activeID AND `userid`=:userid";
+        $stmt= $pdo->prepare($sql);
+        
+        $stmt->bindValue(':activeID',$activeID);
+        $stmt->bindValue(':userid',$userid);
+        
+        $stmt->execute();
+        $result = $stmt->fetch();
+        
+        $db->closeConnection();
 	    
-	    if($result) {
-	        $_SESSION['alert'] = "報名成功";
-	        return $result;
-	    }
+	    return $result; 
     }
     
     public function message(){
         $_SESSION['alert'] = "此次報名人數超過報名餘額";
     }
     
+    public function statusmessage(){
+        $_SESSION['alert'] = "你已經報名過了!!";
+    }
+    
+    public function countmessage(){
+        $_SESSION['alert'] = "報名人數額滿!!";
+    }
 }
 ?>

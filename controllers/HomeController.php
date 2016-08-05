@@ -18,13 +18,14 @@ class HomeController extends Controller {
             $bringwith = $_POST['bringwith'];
             $userid = $_POST['userid'];
             $username = $_POST['username'];
+            $status = $_POST['status'];
             
             $showArray = Array();
             
          	$row = $crud->creatactive($name,$limit,$startdate,$enddate,$bringwith,$limit);
         	//$row = $pdo->lastInsertId(); 最後一個activeID
         	
-        	$member = $crud->addmember($row,$userid,$username);
+        	$member = $crud->addmember($row,$userid,$username,$status);
         	
         	$active = $crud->getactive($row);
         	
@@ -81,19 +82,27 @@ class HomeController extends Controller {
             
             $checkArray = Array();
             
-            $row = $crud->getmember($activeID,$userid,$username);
+            $status = $crud->getmemberstatus($activeID,$userid);
+            
+            $row = $crud->checkmember($activeID,$userid,$username);
             
             if($row>0) {
                 $test = $crud->getactive($activeID);
-                // var_dump($test[0]["count"]); 取出count值
-                // exit;
-                $newcount = $test[0]["count"] - $bringwith;
-                if($newcount >= 0){
+                $checkArray['active'] = $test;
+                
+                $newcount = $test[0]["count"] - $bringwith;  //確認報名餘額
+                if($newcount >= 0 && $status['status'] == 0){
                     $count = $crud->updatecount($newcount,$activeID);
+                    $status = $crud->updatestatus($activeID,$userid);
                     $this->view("index");
-                }else{
-                    $checkArray['active'] = $test;
+                }else if($test[0]["count"] == 0){
+                    $message = $crud->countmessage();
+                    $this->view("signup",$checkArray);
+                }else if($newcount < 0 && $status['status'] == 0){
                     $message = $crud->message();
+                    $this->view("signup",$checkArray);
+                }else if($status['status'] == 1){
+                    $message = $crud->statusmessage();
                     $this->view("signup",$checkArray);
                 }
                 

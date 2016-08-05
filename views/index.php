@@ -74,6 +74,7 @@
                         <input type="button" value="減少一欄" onclick="remove_data()"><br />
                     </div>
                     <br />
+                    <input type="hidden" name="status" value="0">
                     <button class="btn btn-lg btn-primary btn-block" type="submit">送出</button>
                     </form>
                     
